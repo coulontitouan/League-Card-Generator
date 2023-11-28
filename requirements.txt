@@ -1,0 +1,8 @@
+flask
+python-dotenv
+pyYAML
+bootstrap-flask
+flask-sqlalchemy
+flask-wtf
+flask-login
+Werkzeug==2.3.0

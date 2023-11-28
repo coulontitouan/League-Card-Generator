@@ -1,0 +1,106 @@
+main {
+    text-align: center;
+}
+
+#fond {
+	background: radial-gradient(circle, rgba(255,125,125,1) 0%, rgba(255,192,192,1) 100%);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+#info {
+    display: flex;
+    justify-content:space-evenly;
+}
+
+#infoP,#infoE,#historique{
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+
+.informations, #infoE > li{
+    display: flex;
+    justify-content: center;
+    color: black;
+    flex-basis: 50%;
+}
+
+#infoP > h2, #infoE > h2{
+    flex-basis: 100%;
+}
+#infoP #infoE {
+   display: flex;
+}
+.test{
+    display: flex;
+    flex-basis: 100%;
+    justify-content: space-evenly;
+    padding: 0;
+}
+.informations>li{
+    flex-basis: 50%;
+    flex-wrap: wrap;
+}
+
+.test2{
+    width: 2rem;
+    margin-top: 0.5rem;
+    padding: 0%;
+}
+.informations{
+    height: 35vh;
+    flex-wrap: wrap;
+    margin-top: 0.75rem ;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-items: center;
+}
+.test2>p{
+    margin-top: 1rem;
+    font-weight: lighter;
+}
+
+.button-Logout {
+  background: #FF4742;
+  border: 1px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  color: #FFFFFF;
+  font-weight: 800;
+  line-height: 16px;
+  padding: 12px 14px;
+  margin-bottom: 1em;
+}
+
+.button-Logout:hover,.button-Logout:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #FF4742;
+}
+
+
+.button-mdp {
+  background-color: #0276FF;
+  border-radius: 8px;
+  border-style: none;
+  box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+  color: #fff;
+  cursor: pointer;
+  font-family: "RM Neue",sans-serif;
+  font-size: 100%;
+  line-height: 1.15;
+  padding: 10px 21px;
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+.button-mdp:active {
+  background-color: #006AE8;
+}
+
+.button-mdp:hover {
+  background-color: #1C84FF;
+}

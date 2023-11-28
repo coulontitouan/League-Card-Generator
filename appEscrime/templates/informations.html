@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='informations.css')}}">
+{% endblock %}
+{% block content %}
+<section>
+    <h1>Informations</h1>
+    <article>
+        <h2>Règles</h2>
+        <div>
+            <p>Une épreuve d'escrime oppose deux adversaires, 
+                chacun tentant de toucher l'autre sur les surfaces valables à l'aide de son arme. 
+                Il s'agit de cumuler suffisamment de points pour gagner le combat. 
+                Pour les épreuves en phase de poule, 
+                le premier tireur qui marque 5 touches est déclaré vainqueur.
+                Pour les épreuves en éliminations directe,
+                le premier tireur qui marque 15 touches est déclaré vainqueur.
+            </p>
+            <img id= "EscrimeInformation" src="{{ url_for('static', filename='images/regleEscrime.webp') }}" alt="escrime">
+            
+        </div>
+    </article>
+    <article>
+        <h2>Types d'armes</h2>
+        <ul>
+            <li>
+                <h3>Fleuret</h3>
+                <img id= "arme" src="{{ url_for('static', filename='images/Fleuret.png') }}" alt="Fleuret">
+                <p>L’arme « noble », 
+                    car l’arme d’apprentissage.
+                    Au Fleuret, il faut toucher son adversaire avec la pointe de l’arme. 
+                    Celle-ci est équipée d’un petit interrupteur sous forme de poussoir, 
+                    la pression exercée permet le contact et valide la touche. 
+                    C’est par le fleuret qu’on apprend l’escrime. 
+                    C’est la plus petite des trois armes, la plus maniable.
+                    la surface valable est la plus petite des 3.
+                    Lorsque l’on touche son adversaire sur la cuirasse, la lampe témoin s’allume de couleur
+                    Pour corser la chose, la règle indique une priorité à l’attaquant, en clair, si les deux tireurs allument valable,
+                    c’est celui qui est parti le premier qui marque le point</p>    
+            </li>
+            <li>
+                <h3>Sabre</h3>
+                <img id= "arme" src="{{ url_for('static', filename='images/Sabre.png') }}" alt="Sabre">
+                <p>La différence du sabre c'est qu'on peut toucher son adversaire avec toute la longueur de la lame 
+                    (et non seulement la pointe) et que la surface valable est constituée par tout le haut du corps, 
+                    bras et masque compris, seules les mains sont non valables
+                     Le sabre est une arme dont la pratique est spectaculaire, car très rapide. Les actions y sont explosives et brèves</p>
+            </li>
+            <li>
+                <h3>Épée</h3>
+                <img id= "arme" src="{{ url_for('static', filename='images/Epee.png') }}" alt="epee">
+                <p>comme au fleuret, c’est avec la pointe qu’on touche. Si l’épée n’est pas l’arme la plus spectaculaire,
+                     elle présente l’avantage d’être la plus facile à comprendre et à suivre en tant que spectateur
+                     Premièrement, tout le corps de l’adversaire peut être touché, des pieds à la tête.
+                     Deuxiemement à l’inverse des deux autres armes, donc pas de priorité, si les deux touchent c’est un point partout.
+                     un assaut à l’épée est plus lent, plus patient,
+                     car on doit tenir compte qu’on peut être touché en retour à chaque action qu’on déclenche
+                    </p>    
+            </li>
+        </ul>
+    </article>
+    <article>
+        <h2>Catégories</h2>
+    </article>
+
+</section>
+{% endblock %}

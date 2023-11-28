@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='connexion.css')}}">
+{% endblock %}
+{% block content %}
+	<section id="carre">
+		<input type="checkbox" id="chk" aria-hidden="true">
+			<div class="signup">
+				<form 
+				action="{{ url_for('inscription') }}" 
+					method="post" 
+					role="formsignup" >
+
+					<label class = "titre" for="chk" aria-hidden="true">Inscription</label>
+					{{ formsignup.hidden_tag() }}
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.num_licence(class = test ,class_="form-control1", placeholder ="Numero de licence")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.prenom(class = test ,class_="form-control1", placeholder ="Prenom")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.nom(class = test ,class_="form-control1", placeholder ="Nom")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.date_naissance( class_="form-control1", placeholder ="date_naissance")}}
+						</div>
+					</div>
+					<div id = "select">
+					{{formsignup.sexe(class = radiolabel )}}
+					</div>
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.club(class_="form-control1, id = club ")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formsignup.mot_de_passe(class_="form-control1", placeholder ="Mot de passe")}}
+						</div>
+					</div>
+					<button class="buttonSign" >S'inscrire</button>
+				</form>
+			</div>
+
+			<div class="login">
+				<form 
+				action="{{ url_for('connexion') }}" 
+					method="post" 
+					role="login" >
+					<label class = "titre" for="chk" aria-hidden="true">Connexion</label>
+					{{ formlogin.hidden_tag() }}
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formlogin.num_licence(class = test ,class_="form-control1", placeholder ="Numero de licence")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="formconnexion">
+	  						{{ formlogin.mot_de_passe(class_="form-control1", placeholder ="Mot de passe")}}
+						</div>
+					</div>
+	
+					<button class="buttonSign">Se connecter</button>
+				</form>
+			</div>
+	</section>
+{% endblock %}

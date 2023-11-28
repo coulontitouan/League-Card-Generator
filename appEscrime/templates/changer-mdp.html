@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='changer-mdp.css')}}">
+{% endblock %}
+{% block content %}
+<section>
+    <h1>Changer son mot de passe</h1>
+    <form action="{{ url_for('changer_mdp') }}" 
+    method="post" 
+    role="Changer_mdp">
+        {{ formChanger_mdp.new_mdp(class = test ,class_="form-control1", placeholder ="nouveau mot de passe")}}
+    </form>
+</section>
+{% endblock %}

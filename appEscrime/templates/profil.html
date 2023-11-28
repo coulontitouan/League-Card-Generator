@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='profil.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Mon Profil</h1>
+<a href="{{ url_for('deconnexion')}}">
+    <button class="button-Logout" role="button">Se déconnecter</button>
+</a>
+
+<section id="fond">
+    <section id="info">
+        <ul class = "test">
+            <li id="infoP">
+                <h2>Informations personnelles</h2>
+                    <ul class = "informations">
+                        <li class = "test2">
+                            <h4>Nom</h4>
+                            <p>{{ current_user.nom }}</p>
+                        </li>
+                        <li class = "test2">
+                            <h4>Prénom</h4>
+                            <p>{{ current_user.prenom }}</p>
+                        </li>
+                        <li class = "test2">
+                            <h4>Sexe</h4>
+                            <p>{{ current_user.sexe }}</p>
+                        </li>
+                        <li class = "test2">
+                            <h4>Naissance</h4>
+                            <p>{{ current_user.date_naissance }}</p>
+                        </li>
+                    </ul>
+            </li>
+        
+            <li id="infoE">
+                <h2>Informations d'escrimes</h2>
+                <ul class = "informations">
+                        <li class = "test2">
+                            <h4>Numéro de licence</h4>
+                            <p>{{ current_user.num_licence }}</p>
+                        </li>
+                        <li class = "test2">
+                            <h4>Club</h4>
+                            <p>{{ current_user.get_club() }}</p>
+                        </li>
+                        <li class ="test2">
+                            <h4>Meilleur classement</h4>
+                            <p>1</p>
+                        </li>
+                        <li class = "test2">
+                            <h4>Arme</h4>
+                            <p>Fleuret</p>
+                        </li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <a href="#">
+        <button class="button-mdp" role="button">Changer le mot de passe</button>
+    </a>
+    <div id="historique">
+        <h2>Historique des compétitions</h2>
+    </div>
+</section>
+{% endblock %}

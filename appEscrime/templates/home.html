@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
+{% endblock %}
+{% block content %}
+<!-- Ajoutez ceci à l'endroit où vous souhaitez afficher les messages flash -->
+{% for message in get_flashed_messages()  %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div id="body">
+    <h1>Les compétitions :</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Arme</th>
+                <th>Genre</th>
+                <th>Lieu</th>
+                <th>Date</th>
+                <th style="color: white; user-select: none;">Bouton</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in competitions %}
+            <tr>
+                <td>{{ c.nom }}</td>
+                <td>{{ c.get_categorie().libelle }}</td>
+                <td>{{ c.get_arme().libelle }}</td>
+                <td>{{ c.sexe }}</td>
+                <td>{{ c.get_lieu().nom }}</td>
+                <td>{{ c.date }}</td>
+                <td><a href="{{url_for('competition', id=c.id)}}"><button class="favorite styled" type="button" >Voir plus</button></a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>Tournoi de pré-rentrée</td>
+                <td>M15</td>
+                <td>Sabre</td>
+                <td>Homme</td>
+                <td>Beaugency</td>
+                <td>04/08/23</td>
+                <td><a href="https://google.com"><button class="favorite styled" type="button" >Voir plus</button></a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
