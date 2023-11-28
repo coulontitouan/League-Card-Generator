@@ -33,10 +33,8 @@ rang_trad = {
 
 @app.route("/")
 def home():
-    competitions = None
     return render_template(
-        "home.html",
-        competitions = competitions
+        "home.html"
     )
 
 @app.route('/image/<name>/<tag>.png')
