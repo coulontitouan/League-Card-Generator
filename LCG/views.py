@@ -1,26 +1,15 @@
 import math
-from matplotlib import font_manager
 from .app import app
 from flask import flash, render_template, redirect, url_for, send_file
-from flask_login import login_user , current_user, logout_user
 from flask import request,redirect, url_for
-from flask_login import login_required
 from wtforms import StringField , HiddenField, DateField , RadioField, PasswordField,SelectField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
-from hashlib import sha256
-from wtforms import DateField
-import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 import requests
-from io import BytesIO
 from flask import request, jsonify
 import os, signal
-<<<<<<< HEAD
 riot_key = "a"
-=======
-riot_key = "x"
->>>>>>> ea2cb852fbdcf322f66de56e0b9084542b13a781
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
