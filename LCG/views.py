@@ -16,7 +16,11 @@ import requests
 from io import BytesIO
 from flask import request, jsonify
 import os, signal
+<<<<<<< HEAD
 riot_key = "a"
+=======
+riot_key = "x"
+>>>>>>> ea2cb852fbdcf322f66de56e0b9084542b13a781
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
