@@ -4,33 +4,26 @@
 <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
 {% endblock %}
 {% block content %}
-<h1>League Card Generator</h1>
-  <div class="riotform">
-    <form action="{{ url_for('home') }}" method="post">
+  <form action="{{ url_for('home') }}" method="post">
+    <h1>League Card Generator</h1>
+    <div>
       <label class = "titre" aria-hidden="true">
-        Entrez votre RiotID : 
+        <p>Entrez votre RiotID : </p>
         <div class="hoverable">
           <img class="hoverable__main" src={{ url_for('static', filename='images/i.png')}} alt="info">
           <img class="hoverable__tooltip" src={{ url_for('static', filename='images/help.png')}} alt="help">
         </div>
       </label>
       {{ form.hidden_tag() }}
-      <div class="form-group">
-        <div class="formconnexion">
-            {{ form.pseudo(placeholder ="Pseudo", onKeyUp="compte(this,event)", maxlength="16")}}
-            <p id="testp">16</p>
-        </div>
+      <div id="inputs">
+        {{ form.pseudo(placeholder="Pseudo", id="pseudo", onKeyUp="compte(this,event)", maxlength="16"))}}
+        <p id="testp">16</p>
+        {{ form.tag(placeholder="Indicatif", id="tag", onKeyUp="compte(this,event)", maxlength="5"))}}
+        <p id="testt">5</p>
+        <button class="buttonSign">Génerer votre carte !</button>
       </div>
-      <div class="form-group">
-        <div class="formconnexion">
-            {{ form.tag(placeholder ="Indicatif", onKeyUp="compte(this,event)", maxlength="5")}}
-            <p id="testt">16</p>
-        </div>
-      </div>
-
-      <button class="buttonSign">Génerer votre carte !</button>
-    </form>
-  </div>
+    </div>
+  </form>
 <script>
   function compte(form,event){
     console.log(form.attributes.getNamedItem("maxlength").value)
