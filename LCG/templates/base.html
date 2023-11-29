@@ -8,12 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.png')}}"/>
     {% block styles %}
-    <!-- Bootstrap CSS -->
-    {{ bootstrap.load_css() }}
-    <!-- Custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css')}}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     {% endblock %}
 
     <title id="titre">LCG | Accueil</title>

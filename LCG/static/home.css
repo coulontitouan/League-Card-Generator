@@ -1,0 +1,26 @@
+.titre{
+    font-size: xx-large;
+}
+.titre img, .hoverable{
+    height: 1em;
+}
+.hoverable {
+    display: inline-block;
+    position: relative;
+    width: fit-content;
+    vertical-align: sub;
+  }
+  
+  .hoverable>.hoverable__tooltip {
+    display: none;
+  }
+  
+  .hoverable:hover>.hoverable__tooltip {
+    display: inline;
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    background: #888;
+    border: 1px solid black;
+    height: 10em;
+  }

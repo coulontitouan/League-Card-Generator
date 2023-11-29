@@ -5,18 +5,29 @@
 {% endblock %}
 {% block content %}
 <h1>League Card Generator</h1>
-<form action="" method="get" class="form-example">
-    <div class="form-example">
-      <label for="name">Pseudo :</label>
-      <input type="text" name="pseudo" id="pseudo" maxlength="16" required />
-    </div>
-    <div class="form-example">
-      <label for="tag">Indicatif :</label>
-      <input type="text" name="tag" id="tag" maxlength="5" required />
-    </div>
-    <div class="form-example">
-      <input type="submit" value="Generer" />
-    </div>
-  </form>
+  <div class="riotform">
+    <form action="{{ url_for('home') }}" method="post">
+      <label class = "titre" aria-hidden="true">
+        Entrez votre RiotID : 
+        <div class="hoverable">
+          <img class="hoverable__main" src={{ url_for('static', filename='images/i.png')}} alt="info">
+          <img class="hoverable__tooltip" src={{ url_for('static', filename='images/help.png')}} alt="help">
+        </div>
+      </label>
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <div class="formconnexion">
+            {{ form.pseudo(class_="form-control1", placeholder ="Pseudo")}}
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="formconnexion">
+            {{ form.tag(class_="form-control1", placeholder ="Indicatif")}}
+        </div>
+      </div>
+
+      <button class="buttonSign">Génerer votre carte !</button>
+    </form>
+  </div>
   
 {% endblock %}

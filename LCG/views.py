@@ -16,7 +16,7 @@ import requests
 from io import BytesIO
 from flask import request, jsonify
 import os, signal
-riot_key = "RGAPI-604ac389-4dd6-4826-874e-624da22391fc"
+riot_key = "a"
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
@@ -31,14 +31,33 @@ rang_trad = {
     "CHALLENGER": "Challenger"
 }
 
-@app.route("/")
+class RiotForm(FlaskForm):
+    pseudo=StringField('pseudo',validators=[DataRequired()])
+    tag=StringField('tag',validators=[DataRequired()])
+    next = HiddenField()
+
+    def est_valide(self):
+        player = requests.get(f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{self.pseudo.data}/{self.tag.data}?api_key={riot_key}").json()
+        print(player)
+        return player.get("puuid","") != ""
+
+@app.route("/", methods=("GET", "POST"))
 def home():
+    f = RiotForm()
+    if not f.is_submitted():
+        f.next.data = request.args.get("next")
+    if f.validate_on_submit():
+        valide = f.est_valide()
+        if valide:
+            print(f)
+            return redirect(url_for("cree_image",name=f.pseudo.data,tag=f.tag.data))
     return render_template(
-        "home.html"
+        "home.html",
+        form=f
     )
 
 @app.route('/image/<name>/<tag>.png')
-def serve_user_image(name,tag):
+def cree_image(name,tag):
     print(name,tag)
     player,profil,challenges = get_data(name,tag)
     
