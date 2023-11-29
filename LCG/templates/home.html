@@ -16,10 +16,18 @@
       </label>
       {{ form.hidden_tag() }}
       <div id="inputs">
-        {{ form.pseudo(class_="form-control1", placeholder ="Pseudo", id="pseudo")}}
-        {{ form.tag(class_="form-control1", placeholder ="Indicatif", id="tag")}}
+        {{ form.pseudo(placeholder="Pseudo", id="pseudo", onKeyUp="compte(this,event)", maxlength="16"))}}
+        <p id="testp">16</p>
+        {{ form.tag(placeholder="Indicatif", id="tag", onKeyUp="compte(this,event)", maxlength="5"))}}
+        <p id="testt">5</p>
         <button class="buttonSign">Génerer votre carte !</button>
       </div>
     </div>
   </form>
+<script>
+  function compte(form,event){
+    console.log(form.attributes.getNamedItem("maxlength").value)
+    form.parentNode.getElementsByTagName("p")["0"].textContent = form.attributes.getNamedItem("maxlength").value - form.value.length
+  }
+</script>
 {% endblock %}
