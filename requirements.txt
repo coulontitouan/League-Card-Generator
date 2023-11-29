@@ -1,5 +1,0 @@
-flask
-python-dotenv
-bootstrap-flask
-flask-wtf
-Werkzeug==2.3.0
