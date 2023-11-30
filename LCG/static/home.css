@@ -7,6 +7,20 @@
     height: 1em;
 }
 
+#false{
+  font-size: 50vh;
+  color: red;
+  background-color: yellow;
+  border: 10px dotted purple;
+}
+
+body:hover #false{
+  font-size: 5vh;
+  color: blue;
+  background-color: cyan;
+  border: 10px dotted yellowgreen;
+}
+
 .titre {
   padding: 0;
 }

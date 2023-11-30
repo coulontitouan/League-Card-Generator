@@ -46,7 +46,8 @@ def home():
             return redirect(url_for("cree_image",name=f.pseudo.data,tag=f.tag.data))
     return render_template(
         "home.html",
-        form=f
+        form=f,
+        key=riot_key=="a"
     )
 
 @app.route('/image/<name>/<tag>.png')

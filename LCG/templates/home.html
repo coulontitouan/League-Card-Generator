@@ -4,6 +4,11 @@
 <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
 {% endblock %}
 {% block content %}
+{% if key %}
+{% for i in range(100) %}
+<h1 id="false">CLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOT</h1>
+{% endfor %}
+{% else %}
   <form action="{{ url_for('home') }}" method="post">
     <h1>League Card Generator</h1>
     <div>
@@ -16,18 +21,19 @@
       </label>
       {{ form.hidden_tag() }}
       <div id="inputs">
-        {{ form.pseudo(placeholder="Pseudo", id="pseudo", onKeyUp="compte(this,event)", maxlength="16"))}}
+        {{ form.pseudo(placeholder="Pseudo", id="pseudo", onKeyUp="compte(this,event)", maxlength="16")}}
         <p id="testp">16</p>
-        {{ form.tag(placeholder="Indicatif", id="tag", onKeyUp="compte(this,event)", maxlength="5"))}}
+        {{ form.tag(placeholder="Indicatif", id="tag", onKeyUp="compte(this,event)", maxlength="5")}}
         <p id="testt">5</p>
         <button class="buttonSign">Génerer votre carte !</button>
       </div>
     </div>
   </form>
+  {% endif %}
 <script>
   function compte(form,event){
-    console.log(form.attributes.getNamedItem("maxlength").value)
-    form.parentNode.getElementsByTagName("p")["0"].textContent = form.attributes.getNamedItem("maxlength").value - form.value.length
+    console.log(form)
+    form.nextElementSibling.textContent = form.attributes.getNamedItem("maxlength").value - form.value.length
   }
 </script>
 {% endblock %}
