@@ -25,7 +25,7 @@ body:hover #false{
   padding: 0;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 750px) {
   .titre{
     font-size: 4vw;
   }
@@ -72,7 +72,6 @@ form {
 
 form * {
   color: white;
-  padding-bottom: 10%;
 }
 
 form h1 {
@@ -83,20 +82,31 @@ form h1 {
 
 body {
   background-image: url(../static/images/ash.jpg);
+  background-size: cover;
 }
 
 #inputs {
+  margin-top: 5%;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
 }
 
+#inputs * {
+  margin: 2%;
+}
+
 #inputs > input {
-  flex-basis: 80%;
-  margin-top: 5%;
+  border: none;
+  margin-left: 5%;
+  flex-basis: 60%;
   background-color: #333131;
   border-radius: 5px;
   height: 10%;
+}
+
+#inputs > p{
+  flex-basis: 10%;
 }
 
 .buttonSign {
