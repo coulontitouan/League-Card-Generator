@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 import requests
 from flask import request, jsonify
 import os, signal
+import pathlib
 riot_key = "a"
 rang_trad = {
     "UNRANKED": "Non classé",
@@ -33,6 +34,15 @@ class RiotForm(FlaskForm):
         player = requests.get(f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{self.pseudo.data}/{self.tag.data}?api_key={riot_key}").json()
         print(player)
         return player.get("puuid","") != ""
+    
+def nombre_aleatoire_img() :
+    initial_count = 0
+    for path in pathlib.Path("./static/images").iterdir():
+        if path.is_file():
+            initial_count += 1
+    return initial_count
+
+print(nombre_aleatoire_img())
 
 @app.route("/", methods=("GET", "POST"))
 def home():
