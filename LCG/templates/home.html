@@ -4,11 +4,6 @@
 <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
 {% endblock %}
 {% block content %}
-{% if key %}
-{% for i in range(100) %}
-<h1 id="false">CLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOTCLERIOT</h1>
-{% endfor %}
-{% else %}
   <form action="{{ url_for('home') }}" method="post">
     <h1>League Card Generator</h1>
     <div>
@@ -29,7 +24,6 @@
       </div>
     </div>
   </form>
-  {% endif %}
 <script>
   function compte(form,event){
     console.log(form)

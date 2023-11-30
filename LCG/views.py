@@ -1,4 +1,5 @@
 import math
+import random
 from .app import app
 from flask import flash, render_template, redirect, url_for, send_file
 from flask import request,redirect, url_for
@@ -9,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 import requests
 from flask import request, jsonify
 import os, signal
-riot_key = "a"
+riot_key = "RGAPI-604ac389-4dd6-4826-874e-624da22391fc"
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
@@ -44,10 +45,14 @@ def home():
         if valide:
             print(f)
             return redirect(url_for("cree_image",name=f.pseudo.data,tag=f.tag.data))
+    if(not riot_key.startswith("RGAPI")):
+        return render_template(
+            "404.html",
+            image=image404("static/404/")
+        )
     return render_template(
         "home.html",
-        form=f,
-        key=riot_key=="a"
+        form=f
     )
 
 @app.route('/image/<name>/<tag>.png')
@@ -116,7 +121,7 @@ def get_champions(id_joueur, limit=3):
     result = []
 
     for c in champions:
-        lien = f"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-tiles/{c['championId']}/{c['championId']}000.jpg"
+        lien = f"https://cdn.communitydragon.org/latest/champion/{c['championId']}/tile"
         image_champ = round_image(Image.open(requests.get(lien, stream=True).raw).resize((105,105)),True)
 
         lien = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champion-details/global/default/cdp-prog-mastery-{c['championLevel']}.png"
@@ -152,7 +157,7 @@ def generate_image(player_data,profil_data,challenges_data):
     arialrounded = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
     impact = ImageFont.truetype("static/fonts/Spiegel-TTF/Spiegel_TT_Bold.ttf", 100)
     
-    url_icone = f"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/{profil_data['profileIconId']}.jpg"
+    url_icone = f"https://cdn.communitydragon.org/latest/profile-icon/{profil_data['profileIconId']}"
     icone = Image.open(requests.get(url_icone, stream=True).raw)
     icone = round_image(icone.resize((190,190)),True)
     image.paste(icone,(159,144),icone)
@@ -178,3 +183,7 @@ def generate_image(player_data,profil_data,challenges_data):
     draw.line(((500, 170), (500+draw.textlength(pseudo,impact), 170)), "#C89B3C", width=4)
 
     return image
+
+def image404(dir):
+    print(random.choice(os.listdir(dir)))
+    return f"{dir}{random.choice(os.listdir(dir))}"
