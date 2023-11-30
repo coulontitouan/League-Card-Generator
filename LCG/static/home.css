@@ -2,27 +2,10 @@
     font-size: xx-large;
     justify-content: space-around;
     display: flex;
+    padding: 0;
 }
 .titre img, .hoverable{
     height: 1em;
-}
-
-#false{
-  font-size: 50vh;
-  color: red;
-  background-color: yellow;
-  border: 10px dotted purple;
-}
-
-body:hover #false{
-  font-size: 5vh;
-  color: blue;
-  background-color: cyan;
-  border: 10px dotted yellowgreen;
-}
-
-.titre {
-  padding: 0;
 }
 
 @media screen and (max-width: 750px) {

@@ -1,3 +1,7 @@
+@font-face {
+    font-family: "BeaufortBold";
+    src: url(fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf) format("truetype");
+}
 * {
     margin: 0;
     padding: 0;
@@ -5,6 +9,7 @@
 
 html {
     overflow-x: hidden;
+    font-family: "BeaufortBold";
 }
 
 html, body{
@@ -25,11 +30,4 @@ ul {
     position: absolute;
     right: 5%;
     bottom: 5%;
-}
-@font-face {
-    font-family: "BeaufortBold";
-    src: url(fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf) format("truetype");
-}
-h1{
-    font-family: "BeaufortBold";
 }

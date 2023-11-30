@@ -13,7 +13,7 @@ import requests
 from flask import request, jsonify
 import os, signal
 import pathlib
-riot_key = "a"
+riot_key = "RGAPI-604ac389-4dd6-4826-874e-624da22391fc"
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
@@ -60,11 +60,12 @@ def home():
     if(not riot_key.startswith("RGAPI")):
         return render_template(
             "404.html",
-            image=image404("static/404/")
+            image=random_image("static/images/404/")
         )
     return render_template(
         "home.html",
-        form=f
+        form=f,
+        background=random_image("static/images/background/")
     )
 
 @app.route("/shutdown", methods=['GET'])
@@ -185,6 +186,6 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
 
     return image
 
-def image404(dir):
+def random_image(dir):
     print(random.choice(os.listdir(dir)))
     return f"{dir}{random.choice(os.listdir(dir))}"
