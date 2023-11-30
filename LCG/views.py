@@ -1,4 +1,7 @@
 import math
+import random
+
+from LCG import Exceptions
 from .app import app
 from flask import flash, render_template, redirect, url_for, send_file
 from flask import request,redirect, url_for
@@ -54,80 +57,76 @@ def home():
         if valide:
             print(f)
             return redirect(url_for("cree_image",name=f.pseudo.data,tag=f.tag.data))
+    if(not riot_key.startswith("RGAPI")):
+        return render_template(
+            "404.html",
+            image=image404("static/404/")
+        )
     return render_template(
         "home.html",
-        form=f,
-        key=riot_key=="a"
+        form=f
     )
-
-@app.route('/image/<name>/<tag>.png')
-def cree_image(name,tag):
-    print(name,tag)
-    player,profil,challenges = get_data(name,tag)
-    
-    user_image = generate_image(player,profil,challenges)
-    
-    temp_image_path = f"static/league/{name}#{tag}.png"
-    user_image.save(temp_image_path)
-    
-    return send_file(temp_image_path, mimetype='image/png')
 
 @app.route("/shutdown", methods=['GET'])
 def shutdown():
     os.kill(os.getpid(), signal.SIGINT)
     return jsonify({ "success": True, "message": "Server is shutting down..." })
 
-def get_data(name,tag):
-    player_url = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{name}/{tag}?api_key={riot_key}"
-    response = requests.get(player_url)
-    player_data = response.json()
+@app.route('/image/<name>/<tag>.png')
+def cree_image(name:str,tag:str) -> Image:
+    print(name,tag)
+    riot,summoner,challenges = get_data(name,tag)
+    
+    user_image =  generate_image(riot,summoner,challenges)
+    
+    image_path = f"static/league/{riot['gameName']}#{riot['tagLine']}.png"
+    user_image.save(image_path)
+    
+    return send_file(image_path,mimetype='image/png')
 
-    profil_url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{player_data['puuid']}?api_key={riot_key}"
-    response = requests.get(profil_url)
-    profil_data = response.json()
+def get_data(name:str,tag:str):
+    riot_url = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{name}/{tag}?api_key={riot_key}"
+    riot_data = requests.get(riot_url).json()
 
-    challenges_url = f"https://euw1.api.riotgames.com/lol/challenges/v1/player-data/{player_data['puuid']}?api_key={riot_key}"
-    response = requests.get(challenges_url)
-    challenges_data = response.json()
+    summoner_url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{riot_data['puuid']}?api_key={riot_key}"
+    summoner_data = requests.get(summoner_url).json()
 
-    return player_data,profil_data,challenges_data
+    challenges_url = f"https://euw1.api.riotgames.com/lol/challenges/v1/player-data/{riot_data['puuid']}?api_key={riot_key}"
+    challenges_data = requests.get(challenges_url).json()
 
-def get_titre(id):
-    if id == "":
+    return riot_data,summoner_data,challenges_data
+
+def get_titre(id_titre) -> str:
+    if id_titre == "":
         return ""
     titres = requests.get("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/fr_fr/v1/challenges.json").json()["titles"]
-    for t in titres:
-        if int(titres[t]['itemId']) == int(id):
-            return titres[t]['name']
-    return ""
+    for t in titres.values():
+        if t['itemId'] == int(id_titre):
+            return t['name']
+    raise Exceptions.TitrePasDansBD()
         
-def get_rang(id_joueur):
-    if id_joueur == "":
-        return "Non classé"
+def get_rang(id_joueur:int) -> str:
     classes = requests.get(f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_joueur}?api_key={riot_key}").json()
     for c in classes:
         if c['queueType'] == "RANKED_SOLO_5x5":
-            return f"{rang_trad[c['tier']]} {c['rank']} {c['leaguePoints']} PL"
+            return f"{rang_trad[c['tier']]} {c['rank']} ({c['leaguePoints']} PL)"
     return "Non classé"
 
-def round_image(image:Image, transparent:bool=False):
+def round_image(image:Image) -> Image:
     mask = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0, image.width, image.height), fill=255)
-    if transparent:
-        result = Image.new("RGBA", image.size, (255,255,255,0))
-    else:
-        result = Image.new("RGB", image.size, (255,255,255))
+    result = Image.new("RGBA", image.size, (255,255,255,0))
     result.paste(image,mask=mask)
     return result
 
-def get_champions(id_joueur, limit=3):
+def get_champions(id_joueur:int, limit:int=3) -> list[Image.Image]:
     champions = requests.get(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{id_joueur}?api_key={riot_key}").json()[:limit]
     result = []
 
     for c in champions:
-        lien = f"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-tiles/{c['championId']}/{c['championId']}000.jpg"
-        image_champ = round_image(Image.open(requests.get(lien, stream=True).raw).resize((105,105)),True)
+        lien = f"https://cdn.communitydragon.org/latest/champion/{c['championId']}/tile"
+        image_champ = round_image(Image.open(requests.get(lien, stream=True).raw).resize((105,105)))
 
         lien = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champion-details/global/default/cdp-prog-mastery-{c['championLevel']}.png"
         image_maitrise = Image.open(requests.get(lien, stream=True).raw)
@@ -140,7 +139,6 @@ def get_champions(id_joueur, limit=3):
     return result
 
 def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Image:
-    """Generate a vertical gradient."""
     left = Image.new('RGB', (width, height), colour1)
     right = Image.new('RGB', (width, height), colour2)
     mask = Image.new('L', (width, height))
@@ -148,23 +146,21 @@ def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Im
     for x in range(width):
         mask_data.append(int(255 * (x / width)))
     mask_data.extend(mask_data*(height-1))
-    print(len(mask_data))
     mask.putdata(mask_data)
     left.paste(right, (0, 0), mask)
     return left
 
-def generate_image(player_data,profil_data,challenges_data):
-    
+def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Image:
+    beaufort = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
+    beaufort_titre = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
+
     width, height = (1536, 512)
     image = generate_gradient("#091428","#0A1428",width,height)
     draw = ImageDraw.Draw(image)
-    
-    arialrounded = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
-    impact = ImageFont.truetype("static/fonts/Spiegel-TTF/Spiegel_TT_Bold.ttf", 100)
-    
-    url_icone = f"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/{profil_data['profileIconId']}.jpg"
+
+    url_icone = f"https://cdn.communitydragon.org/latest/profile-icon/{summoner_data['profileIconId']}"
     icone = Image.open(requests.get(url_icone, stream=True).raw)
-    icone = round_image(icone.resize((190,190)),True)
+    icone = round_image(icone.resize((190,190)))
     image.paste(icone,(159,144),icone)
 
     url_bordure = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/uikit/themed-borders/theme-{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}-border.png"
@@ -172,19 +168,23 @@ def generate_image(player_data,profil_data,challenges_data):
     image.paste(bordure,(0,0),bordure)
 
     titre = f"{get_titre(challenges_data['preferences']['title'])}"
-    draw.text((256-draw.textlength(titre, arialrounded)/2, 430), titre, fill="#F0E6D2", align="center", font=arialrounded)
+    draw.text((256-draw.textlength(titre, beaufort)/2, 430), titre, fill="#F0E6D2", align="center", font=beaufort)
 
-    niveau = f"{profil_data['summonerLevel']}"
-    draw.text((256-draw.textlength(niveau, arialrounded)/2, 50), niveau, fill="#F0E6D2", font=arialrounded)
+    niveau = f"{summoner_data['summonerLevel']}"
+    draw.text((256-draw.textlength(niveau, beaufort)/2, 50), niveau, fill="#F0E6D2", font=beaufort)
 
-    pseudo = f"{player_data['gameName']}#{player_data['tagLine']}"
-    draw.text((500, 50), pseudo, fill="#F0E6D2", font=impact)
+    pseudo = f"{riot_data['gameName']}#{riot_data['tagLine']}"
+    draw.text((500, 50), pseudo, fill="#F0E6D2", font=beaufort_titre)
 
-    draw.text((500, 256), f"Rang : {get_rang(profil_data['id'])}", fill="#F0E6D2", font=arialrounded)
+    draw.text((500, 256), f"Rang : {get_rang(summoner_data['id'])}", fill="#F0E6D2", font=beaufort)
     counter = 10
-    for i in get_champions(profil_data['id']):
+    for i in get_champions(summoner_data['id']):
         image.paste(i, (width-130,counter),i)
         counter+=170
-    draw.line(((500, 170), (500+draw.textlength(pseudo,impact), 170)), "#C89B3C", width=4)
+    draw.line(((500, 170), (500+draw.textlength(pseudo,beaufort_titre), 170)), "#C89B3C", width=4)
 
     return image
+
+def image404(dir):
+    print(random.choice(os.listdir(dir)))
+    return f"{dir}{random.choice(os.listdir(dir))}"

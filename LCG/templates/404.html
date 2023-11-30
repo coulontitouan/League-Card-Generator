@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}"/>
+    {% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='404.css') }}">
+    {% endblock %}
+
+    <title id="titre">Page non trouvée</title>
+    {% endblock %}
+</head>
+
+<body>
+    <div>
+        <h1>404 Page non trouvée</h1>
+        <img src="{{ image }}" alt="page_non_trouve_gif">
+    </div>
+    {% block scripts %}
+    <!-- Optional JavaScript -->
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+</body>
+
+</html>
