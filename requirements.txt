@@ -3,3 +3,4 @@ bootstrap-flask
 flask-wtf
 Pillow
 requests
+python-dotenv

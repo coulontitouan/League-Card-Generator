@@ -45,8 +45,6 @@ def nombre_aleatoire_img() :
             initial_count += 1
     return initial_count
 
-print(nombre_aleatoire_img())
-
 @app.route("/", methods=("GET", "POST"))
 def home():
     f = RiotForm()
