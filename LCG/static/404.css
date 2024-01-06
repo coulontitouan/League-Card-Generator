@@ -21,6 +21,7 @@ div{
     z-index: 2;
     background: -webkit-linear-gradient(90deg,#785A28, #C89B3C);
     transform: translateX(-50%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }

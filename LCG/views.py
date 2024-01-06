@@ -1,7 +1,7 @@
 import math
 import random
 
-from LCG import Exceptions
+from LCG import exceptions
 from .app import app
 from flask import flash, render_template, redirect, url_for, send_file
 from flask import request,redirect, url_for
@@ -40,7 +40,7 @@ class RiotForm(FlaskForm):
     
 def nombre_aleatoire_img() :
     initial_count = 0
-    for path in pathlib.Path("./static/images").iterdir():
+    for path in pathlib.Path("LCG/static/images").iterdir():
         if path.is_file():
             initial_count += 1
     return initial_count
@@ -65,7 +65,7 @@ def home():
     return render_template(
         "home.html",
         form=f,
-        background=random_image("static/images/background/")
+        background=random_image("LCG/static/images/background/")
     )
 
 @app.route("/shutdown", methods=['GET'])
@@ -80,7 +80,7 @@ def cree_image(name:str,tag:str) -> Image:
     
     user_image =  generate_image(riot,summoner,challenges)
     
-    image_path = f"static/league/{riot['gameName']}#{riot['tagLine']}.png"
+    image_path = f"LCG/static/league/{riot['gameName']}#{riot['tagLine']}.png"
     user_image.save(image_path)
     
     return send_file(image_path,mimetype='image/png')
@@ -104,7 +104,7 @@ def get_titre(id_titre) -> str:
     for t in titres.values():
         if t['itemId'] == int(id_titre):
             return t['name']
-    raise Exceptions.TitrePasDansBD()
+    raise exceptions.TitrePasDansBD()
         
 def get_rang(id_joueur:int) -> str:
     classes = requests.get(f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_joueur}?api_key={riot_key}").json()
@@ -187,5 +187,5 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
     return image
 
 def random_image(dir):
-    print(random.choice(os.listdir(dir)))
-    return f"{dir}{random.choice(os.listdir(dir))}"
+    var = random.choice(os.listdir(dir))
+    return var
