@@ -1,5 +1,4 @@
 flask
-bootstrap-flask
 flask-wtf
 Pillow
 requests
