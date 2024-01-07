@@ -13,7 +13,7 @@ import requests
 from flask import request, jsonify
 import os, signal
 import pathlib
-riot_key = "RGAPI-604ac389-4dd6-4826-874e-624da22391fc"
+riot_key = "RGAPI-5d59be91-f9a6-436d-af4c-903137306949"
 rang_trad = {
     "UNRANKED": "Non classé",
     "IRON": "Fer",
@@ -58,7 +58,7 @@ def home():
     if(not riot_key.startswith("RGAPI")):
         return render_template(
             "404.html",
-            image=random_image("static/images/404/")
+            image=random_image("LCG/static/images/404/")
         )
     return render_template(
         "home.html",
@@ -71,15 +71,15 @@ def shutdown():
     os.kill(os.getpid(), signal.SIGINT)
     return jsonify({ "success": True, "message": "Server is shutting down..." })
 
-@app.route('/image/<name>/<tag>.png')
+@app.route('/images/<name>/<tag>.png')
 def cree_image(name:str,tag:str) -> Image:
     print(name,tag)
     riot,summoner,challenges = get_data(name,tag)
     
     user_image =  generate_image(riot,summoner,challenges)
     
-    image_path = f"LCG/static/league/{riot['gameName']}#{riot['tagLine']}.png"
-    user_image.save(image_path)
+    image_path = f"static/league/{riot['gameName']}#{riot['tagLine']}.png"
+    user_image.save(f"LCG/{image_path}")
     
     return send_file(image_path,mimetype='image/png')
 
@@ -119,8 +119,9 @@ def round_image(image:Image) -> Image:
     result.paste(image,mask=mask)
     return result
 
-def get_champions(id_joueur:int, limit:int=3) -> list[Image.Image]:
-    champions = requests.get(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{id_joueur}?api_key={riot_key}").json()[:limit]
+def get_champions(puuid_joueur:int, limit:int=3) -> list[Image.Image]:
+    print(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid_joueur}?api_key={riot_key}")
+    champions = requests.get(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid_joueur}?api_key={riot_key}").json()[:limit]
     result = []
 
     for c in champions:
@@ -150,8 +151,8 @@ def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Im
     return left
 
 def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Image:
-    beaufort = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
-    beaufort_titre = ImageFont.truetype("static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
+    beaufort = ImageFont.truetype("LCG/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
+    beaufort_titre = ImageFont.truetype("LCG/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
 
     width, height = (1536, 512)
     image = generate_gradient("#091428","#0A1428",width,height)
@@ -177,7 +178,7 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
 
     draw.text((500, 256), f"Rang : {get_rang(summoner_data['id'])}", fill="#F0E6D2", font=beaufort)
     counter = 10
-    for i in get_champions(summoner_data['id']):
+    for i in get_champions(summoner_data['puuid']):
         image.paste(i, (width-130,counter),i)
         counter+=170
     draw.line(((500, 170), (500+draw.textlength(pseudo,beaufort_titre), 170)), "#C89B3C", width=4)

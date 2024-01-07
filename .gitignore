@@ -5,3 +5,4 @@ venv
 venv
 ._*
 .vscode
+LCG/static/league/*
