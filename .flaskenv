@@ -1,2 +1,0 @@
-FLASK_APP=LCG
-FLASK_ENV=development

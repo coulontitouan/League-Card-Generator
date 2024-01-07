@@ -1,18 +1,16 @@
 import math
 import random
-
-from LCG import exceptions
-from .app import app
-from flask import flash, render_template, redirect, url_for, send_file
+from pathlib import Path
+from exceptions import *
+from app import app
+from flask import flash, render_template, redirect, url_for, send_file, jsonify
 from flask import request,redirect, url_for
 from wtforms import StringField , HiddenField, DateField , RadioField, PasswordField,SelectField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
 from PIL import Image, ImageDraw, ImageFont
 import requests
-from flask import request, jsonify
 import os, signal
-import pathlib
 riot_key = "RGAPI-5d59be91-f9a6-436d-af4c-903137306949"
 rang_trad = {
     "UNRANKED": "Non classé",
@@ -27,6 +25,10 @@ rang_trad = {
     "GRANDMASTER": "Grand Maître",
     "CHALLENGER": "Challenger"
 }
+proxies = {
+ "http": "http://10.10.10.10:8000",
+ "https": "http://10.10.10.10:8000",
+}
 
 class RiotForm(FlaskForm):
     pseudo=StringField('pseudo',validators=[DataRequired()])
@@ -36,10 +38,10 @@ class RiotForm(FlaskForm):
     def est_valide(self):
         player = requests.get(f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{self.pseudo.data}/{self.tag.data}?api_key={riot_key}").json()
         return player.get("puuid","") != ""
-    
+
 def nombre_aleatoire_img() :
     initial_count = 0
-    for path in pathlib.Path("LCG/static/images").iterdir():
+    for path in Path("/home/livreur/League-Card-Generator/static/images").iterdir():
         if path.is_file():
             initial_count += 1
     return initial_count
@@ -56,12 +58,12 @@ def home():
     if(not riot_key.startswith("RGAPI")):
         return render_template(
             "404.html",
-            image=random_image("LCG/static/images/404/")
+            image=random_image("/home/livreur/League-Card-Generator/static/images/404/")
         )
     return render_template(
         "home.html",
         form=f,
-        background=random_image("LCG/static/images/background/")
+        background=random_image("/home/livreur/League-Card-Generator/static/images/background/")
     )
 
 @app.route("/shutdown", methods=['GET'])
@@ -72,12 +74,12 @@ def shutdown():
 @app.route('/images/<name>/<tag>.png')
 def cree_image(name:str,tag:str) -> Image:
     riot,summoner,challenges = get_data(name,tag)
-    
+
     user_image =  generate_image(riot,summoner,challenges)
-    
-    image_path = f"static/league/{riot['gameName']}#{riot['tagLine']}.png"
-    user_image.save(f"LCG/{image_path}")
-    
+
+    image_path = f"/home/livreur/League-Card-Generator/static/league/{riot['gameName']}#{riot['tagLine']}.png"
+    user_image.save(f"{image_path}")
+
     return send_file(image_path,mimetype='image/png')
 
 def get_data(name:str,tag:str):
@@ -99,8 +101,8 @@ def get_titre(id_titre) -> str:
     for t in titres.values():
         if t['itemId'] == int(id_titre):
             return t['name']
-    raise exceptions.TitrePasDansBD()
-        
+    raise TitrePasDansBD()
+
 def get_rang(id_joueur:int) -> str:
     classes = requests.get(f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_joueur}?api_key={riot_key}").json()
     for c in classes:
@@ -121,12 +123,12 @@ def get_champions(puuid_joueur:int, limit:int=3) -> list[Image.Image]:
     result = []
 
     for c in champions:
-        lien = f"https://cdn.communitydragon.org/latest/champion/{c['championId']}/tile"
+        lien = f"https://cdn.communitydragon.org/latest/champion/{c['championId']}/tile.jpg"
         image_champ = round_image(Image.open(requests.get(lien, stream=True).raw).resize((105,105)))
 
         lien = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champion-details/global/default/cdp-prog-mastery-{c['championLevel']}.png"
         image_maitrise = Image.open(requests.get(lien, stream=True).raw)
-    
+
         image_maitrise.paste(image_champ,(7,13),image_champ)
 
         image_maitrise = image_maitrise.resize((96,160))
@@ -147,20 +149,20 @@ def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Im
     return left
 
 def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Image:
-    beaufort = ImageFont.truetype("LCG/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
-    beaufort_titre = ImageFont.truetype("LCG/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
+    beaufort = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
+    beaufort_titre = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
 
     width, height = (1536, 512)
     image = generate_gradient("#091428","#0A1428",width,height)
     draw = ImageDraw.Draw(image)
 
-    url_icone = f"https://cdn.communitydragon.org/latest/profile-icon/{summoner_data['profileIconId']}"
-    icone = Image.open(requests.get(url_icone, stream=True).raw)
+    url_icone = f"https://cdn.communitydragon.org/latest/profile-icon/{summoner_data['profileIconId']}.jpg"
+    icone = Image.open(requests.get(url_icone, stream=True, proxies=proxies).raw)
     icone = round_image(icone.resize((190,190)))
     image.paste(icone,(159,144),icone)
 
     url_bordure = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/uikit/themed-borders/theme-{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}-border.png"
-    bordure = Image.open(requests.get(url_bordure, stream=True).raw)
+    bordure = Image.open(requests.get(url_bordure, stream=True, proxies=proxies).raw)
     image.paste(bordure,(0,0),bordure)
 
     titre = f"{get_titre(challenges_data['preferences']['title'])}"
