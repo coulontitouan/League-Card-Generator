@@ -159,7 +159,7 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
     image.paste(icone,(159,144),icone)
 
     if challenges_data['preferences']:
-        # A REGLER Livreur#Test0
+        # A REGLER Livreur#TEST0
         url_bordure = f"static/league/border/border{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}.png"
         bordure = Image.open(url_bordure)
         image.paste(bordure,(0,0),bordure)
