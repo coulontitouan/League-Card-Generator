@@ -11,6 +11,7 @@ from flask_wtf import FlaskForm
 from PIL import Image, ImageDraw, ImageFont
 import requests
 import os, signal
+import json
 riot_key = "RGAPI-5d59be91-f9a6-436d-af4c-903137306949"
 rang_trad = {
     "UNRANKED": "Non classé",
@@ -36,13 +37,6 @@ class RiotForm(FlaskForm):
     def est_valide(self):
         player = requests.get(f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{self.pseudo.data}/{self.tag.data}?api_key={riot_key}").json()
         return player.get("puuid","") != ""
-
-def nombre_aleatoire_img() :
-    initial_count = 0
-    for path in Path("/home/livreur/League-Card-Generator/static/images").iterdir():
-        if path.is_file():
-            initial_count += 1
-    return initial_count
 
 @app.route("/", methods=("GET", "POST"))
 def home():
@@ -96,7 +90,8 @@ def get_data(name:str,tag:str):
 def get_titre(id_titre) -> str:
     if id_titre == "":
         return ""
-    titres = requests.get("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/fr_fr/v1/challenges.json").json()["titles"]
+
+    titres = json.load(open("/home/livreur/League-Card-Generator/static/league/data/challenges.json"))["titles"]
     for t in titres.values():
         if t['itemId'] == int(id_titre):
             return t['name']
@@ -122,11 +117,12 @@ def get_champions(puuid_joueur:int, limit:int=3) -> list[Image.Image]:
     result = []
 
     for c in champions:
-        lien = f"https://cdn.communitydragon.org/latest/champion/{c['championId']}/tile.jpg"
+        
+        lien = get_name_from_id(c['championId'])
         image_champ = round_image(Image.open(requests.get(lien, stream=True).raw).resize((105,105)))
 
-        lien = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-champion-details/global/default/cdp-prog-mastery-{c['championLevel']}.png"
-        image_maitrise = Image.open(requests.get(lien, stream=True).raw)
+        lien = f"/home/livreur/League-Card-Generator/static/league/mastery/mastery{c['championLevel']}.png"
+        image_maitrise = Image.open(lien)
 
         image_maitrise.paste(image_champ,(7,13),image_champ)
 
@@ -148,9 +144,8 @@ def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Im
     return left
 
 def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Image:
-    global version
-    if not version:
-        update_version()
+    update_version()
+
     beaufort = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
     beaufort_titre = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
 
@@ -163,12 +158,14 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
     icone = round_image(icone.resize((190,190)))
     image.paste(icone,(159,144),icone)
 
-    url_bordure = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/uikit/themed-borders/theme-{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}-border.png"
-    bordure = Image.open(requests.get(url_bordure, stream=True).raw)
-    image.paste(bordure,(0,0),bordure)
-
-    titre = f"{get_titre(challenges_data['preferences']['title'])}"
-    draw.text((256-draw.textlength(titre, beaufort)/2, 430), titre, fill="#F0E6D2", align="center", font=beaufort)
+    if challenges_data['preferences']:
+        # A REGLER Livreur#Test0
+        url_bordure = f"static/league/border/border{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}.png"
+        bordure = Image.open(url_bordure)
+        image.paste(bordure,(0,0),bordure)
+        
+        titre = f"{get_titre(challenges_data['preferences']['title'])}"
+        draw.text((256-draw.textlength(titre, beaufort)/2, 430), titre, fill="#F0E6D2", align="center", font=beaufort)
 
     niveau = f"{summoner_data['summonerLevel']}"
     draw.text((256-draw.textlength(niveau, beaufort)/2, 50), niveau, fill="#F0E6D2", font=beaufort)
@@ -192,3 +189,10 @@ def random_image(dir):
 def update_version():
     global version
     version = requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
+
+def get_name_from_id(id):
+    global version
+    data = requests.get(f"https://ddragon.leagueoflegends.com/cdn/{version}/data/fr_FR/champion.json").json()["data"]
+    for name in data.keys():
+        if data[name]["key"] == str(id):
+            return f"https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/{name}_0.jpg"
