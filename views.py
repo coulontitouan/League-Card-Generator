@@ -25,10 +25,8 @@ rang_trad = {
     "GRANDMASTER": "Grand Maître",
     "CHALLENGER": "Challenger"
 }
-proxies = {
- "http": "http://10.10.10.10:8000",
- "https": "http://10.10.10.10:8000",
-}
+
+version = None
 
 class RiotForm(FlaskForm):
     pseudo=StringField('pseudo',validators=[DataRequired()])
@@ -48,6 +46,7 @@ def nombre_aleatoire_img() :
 
 @app.route("/", methods=("GET", "POST"))
 def home():
+    update_version()
     f = RiotForm()
     if not f.is_submitted():
         f.next.data = request.args.get("next")
@@ -149,6 +148,9 @@ def generate_gradient(colour1: str, colour2: str, width: int, height: int) -> Im
     return left
 
 def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Image:
+    global version
+    if not version:
+        update_version()
     beaufort = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf", 40)
     beaufort_titre = ImageFont.truetype("/home/livreur/League-Card-Generator/static/fonts/BeaufortForLoL-TTF/BeaufortforLOL-Heavy.ttf", 100)
 
@@ -156,13 +158,13 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
     image = generate_gradient("#091428","#0A1428",width,height)
     draw = ImageDraw.Draw(image)
 
-    url_icone = f"https://cdn.communitydragon.org/latest/profile-icon/{summoner_data['profileIconId']}.jpg"
-    icone = Image.open(requests.get(url_icone, stream=True, proxies=proxies).raw)
+    url_icone = f"http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{summoner_data['profileIconId']}.png"
+    icone = Image.open(requests.get(url_icone, stream=True).raw)
     icone = round_image(icone.resize((190,190)))
     image.paste(icone,(159,144),icone)
 
     url_bordure = f"https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/uikit/themed-borders/theme-{math.floor(challenges_data['preferences']['prestigeCrestBorderLevel']//25)+1}-border.png"
-    bordure = Image.open(requests.get(url_bordure, stream=True, proxies=proxies).raw)
+    bordure = Image.open(requests.get(url_bordure, stream=True).raw)
     image.paste(bordure,(0,0),bordure)
 
     titre = f"{get_titre(challenges_data['preferences']['title'])}"
@@ -186,3 +188,7 @@ def generate_image(riot_data:dict,summoner_data:dict,challenges_data:dict) -> Im
 def random_image(dir):
     var = random.choice(os.listdir(dir))
     return var
+
+def update_version():
+    global version
+    version = requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
