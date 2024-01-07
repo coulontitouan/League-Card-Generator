@@ -35,7 +35,6 @@ class RiotForm(FlaskForm):
 
     def est_valide(self):
         player = requests.get(f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{self.pseudo.data}/{self.tag.data}?api_key={riot_key}").json()
-        print(player)
         return player.get("puuid","") != ""
     
 def nombre_aleatoire_img() :
@@ -53,7 +52,6 @@ def home():
     if f.validate_on_submit():
         valide = f.est_valide()
         if valide:
-            print(f)
             return redirect(url_for("cree_image",name=f.pseudo.data,tag=f.tag.data))
     if(not riot_key.startswith("RGAPI")):
         return render_template(
@@ -73,7 +71,6 @@ def shutdown():
 
 @app.route('/images/<name>/<tag>.png')
 def cree_image(name:str,tag:str) -> Image:
-    print(name,tag)
     riot,summoner,challenges = get_data(name,tag)
     
     user_image =  generate_image(riot,summoner,challenges)
@@ -120,7 +117,6 @@ def round_image(image:Image) -> Image:
     return result
 
 def get_champions(puuid_joueur:int, limit:int=3) -> list[Image.Image]:
-    print(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid_joueur}?api_key={riot_key}")
     champions = requests.get(f"https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid_joueur}?api_key={riot_key}").json()[:limit]
     result = []
 
